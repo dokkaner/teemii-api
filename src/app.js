@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const memoryCache = require('./utils/limitedCache')
 const mongoDBClient = require('./database/MongoDBClient')
 const redisClient = require('./database/RedisClient')
-const PgClient = require('./database/pgClient')
+const PgClient = require('./database/PGClient')
 const apiUsageTracker = require('./middlewares/APIUsageTracker')
 
 
