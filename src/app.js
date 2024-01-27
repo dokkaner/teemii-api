@@ -81,7 +81,7 @@ const start = async () => {
     const pgClient = PgClient.getInstance()
     await pgClient.connect(pgConnectionConfig)
 
-    await fastify.listen({ port: process.env.PORT || 3000 })
+    await fastify.listen( process.env.PORT || 3000, process.env.ADDRESS || '127.0.0.1')
     fastify.log.info(`Server listening on ${fastify?.server?.address()?.port}`)
   } catch (err) {
     fastify.log.error(err)
