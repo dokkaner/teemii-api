@@ -1,5 +1,5 @@
 const redisClient  = require("../database/RedisClient");
-const memoryCache = require("../utils/LimitedCache");
+const memoryCache = require("../utils/limitedCache");
 
 function getFromMemoryCache(cacheKey) {
   if (process.env.ENABLE_MEMCACHED === "1" && memoryCache.has(cacheKey)) {
