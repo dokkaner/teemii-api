@@ -3,7 +3,7 @@ const path = require('path')
 const Redis = require('ioredis')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 // spec
-const memoryCache = require('./utils/LimitedCache')
+const memoryCache = require('./utils/limitedCache')
 const mongoDBClient = require('./database/MongoDBClient')
 const redisClient = require('./database/RedisClient')
 const PgClient = require('./database/pgClient')
