@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events');
 const PgClient  = require('../database/PGClient')
-const memoryCache = require("../utils/LimitedCache");
+const memoryCache = require("../utils/limitedCache");
 
 class APIUsageTracker extends EventEmitter {
   constructor(flushInterval, flushThreshold) {
