@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const PgClient  = require('../database/pgClient')
+const PgClient  = require('../database/PGClient')
 const memoryCache = require("../utils/LimitedCache");
 
 class APIUsageTracker extends EventEmitter {
