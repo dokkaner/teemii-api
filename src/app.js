@@ -35,12 +35,12 @@ const start = async () => {
           db: 1, // Defaults to 0
         }),
     })
-
+/*
     await fastify.register(compress, {
       global: true,
       threshold: 1024,
     })
-
+*/
     await fastify.register(mangaRoutes)
 
     await fastify.addHook('preHandler', async (request, reply) =>  {
