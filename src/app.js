@@ -1,10 +1,9 @@
-const fastify = require('fastify')({ logger: true })
+const fastify = require('fastify')({ logger: {level: 'warn'}})
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 // spec
 const memoryCache = require('./utils/limitedCache')
 const redisClient = require('./database/RedisClient')
-const compress = require('@fastify/compress')
 
 // Import routes
 const mangaRoutes = require('./routes/mangas')

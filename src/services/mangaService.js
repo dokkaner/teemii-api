@@ -1,6 +1,5 @@
 const { getFromCache, setInCache } = require('./cacheManager')
-const customAxiosInstance= require('./customAxiosInstance')
-
+const customAxiosInstance = require('./customAxiosInstance')
 
 async function getMangaChapters (id) {
   const cacheKey = `manga:${id}:chapters`
@@ -16,12 +15,12 @@ async function getMangaChapters (id) {
     from: 0,
     size: 10000,
     query: {
-      simple_query_string : {
+      simple_query_string: {
         query: id,
-        fields: ["mangaId"],
+        fields: ['mangaId'],
       }
     },
-    sort: [{ "chapterNum.keyword": {order:'asc'}}]
+    sort: [{ 'chapterNum.keyword': { order: 'asc' } }]
   }
   const results = await customAxiosInstance.post(`teemii.chapters/_search`, payload)
   const rows = await results.data.hits.hits.map((hit) => hit._source)
@@ -45,7 +44,6 @@ async function getManga (id) {
   const results = await customAxiosInstance.get(`teemii.mangas/_doc/${id}`)
   const result = results.data._source
 
-
   // Cache the results
   setInCache(cacheKey, result)
   return result
@@ -62,32 +60,32 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   }
 
   // compute start performance
-  const start = process.hrtime.bigint();
+  const start = process.hrtime.bigint()
 
   // Perform the search in ES when cache miss occurs
   const payload = {
     query: {
       query_string: {
-        query:  query
+        query: query
       },
     },
-    "sort": [
-      { "_score": "desc"},
-      { [sortBy]: order === 'ASC' ? "asc" : "desc" }
+    'sort': [
+      { '_score': 'desc' },
+      { [sortBy]: order === 'ASC' ? 'asc' : 'desc' }
     ],
     from: offset,
     size: limit,
   }
-   const results = await customAxiosInstance.post('teemii.mangas/_search', payload)
+  const results = await customAxiosInstance.post('teemii.mangas/_search', payload)
   const total = results.data.hits.total.value
   // compute end performance (in milliseconds)
 
-  const end = process.hrtime.bigint();
-  const time = Number(end - start) / 1000000;
-  console.log(`MongoDB search took ${time} ms`);
+  const end = process.hrtime.bigint()
+  const time = Number(end - start) / 1000000
+  console.log(`MongoDB search took ${time} ms`)
 
   // Cache the results
-  const rows = await results.data.hits.hits.map((hit) => { return { id: hit._id, ...hit._source  }})
+  const rows = await results.data.hits.hits.map((hit) => { return { id: hit._id, ...hit._source }})
   setInCache(cacheKey, rows)
   return { count: total, rows }
 }
