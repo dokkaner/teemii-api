@@ -65,7 +65,7 @@ jobs:
           build-args: |
             COMMIT_TAG=${{ github.sha }}
           tags: |
-            teamdokkaner/teemii-api:latest
-            teamdokkaner/teemii-api:${{ steps.extract_version.outputs.VERSION }}
+            dokkaner/teemii-api:latest
+            dokkaner/teemii-api:${{ steps.extract_version.outputs.VERSION }}
             ghcr.io/dokkaner/teemii-api:latest
             ghcr.io/dokkaner/teemii-api:${{ steps.extract_version.outputs.VERSION }}
