@@ -7,6 +7,9 @@ async function mangaRoutes(fastify) {
   fastify.get('/mangas/:id', async (request, reply) => {
     return mangaController.getManga(fastify, request, reply);
   });
+  fastify.get('/mangas/:id/chapters', async (request, reply) => {
+    return mangaController.getMangaChapters(fastify, request, reply);
+  });
 }
 
 module.exports = mangaRoutes;

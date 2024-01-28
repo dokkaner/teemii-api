@@ -1,5 +1,5 @@
 config:
-  target: http://localhost:3000
+  target: https://api.pencilectric.org
   http:
     defaults:
       headers:
@@ -34,5 +34,6 @@ scenarios:
   - flow:
       - loop:
           - get:
-              url: "/mangas/search?q=Pick%20me%20up"
+              url: "/plume/teemii.mangas/"
+              # url: "/mangas/search?q=Pick%20me%20up"
         count: 100

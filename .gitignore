@@ -30,6 +30,8 @@ Thumbs.db
 *.so
 *.dylib
 
+env.yaml
+
 # Fichiers de débogage
 npm-debug.log*
 yarn-debug.log*

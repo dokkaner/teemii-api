@@ -1,5 +1,36 @@
 const { getFromCache, setInCache } = require('./cacheManager')
-const mongoDBClient = require('../database/MongoDBClient')
+const customAxiosInstance= require('./customAxiosInstance')
+
+
+async function getMangaChapters (id) {
+  const cacheKey = `manga:${id}:chapters`
+
+  // Try fetching from cache first
+  const cachedResult = await getFromCache(cacheKey)
+  if (cachedResult) {
+    return JSON.parse(cachedResult)
+  }
+
+  // Perform the search  in ES when cache miss occurs
+  const payload = {
+    from: 0,
+    size: 10000,
+    query: {
+      simple_query_string : {
+        query: id,
+        fields: ["mangaId"],
+      }
+    },
+    sort: [{ "chapterNum.keyword": {order:'asc'}}]
+  }
+  const results = await customAxiosInstance.post(`teemii.chapters/_search`, payload)
+  const rows = await results.data.hits.hits.map((hit) => hit._source)
+  const total = results.data.hits.total.value
+
+  // Cache the results
+  setInCache(cacheKey, rows)
+  return { count: total, rows }
+}
 
 async function getManga (id) {
   const cacheKey = `manga:${id}`
@@ -10,14 +41,13 @@ async function getManga (id) {
     return JSON.parse(cachedResult)
   }
 
-  // Perform the search in MongoDB when cache miss occurs
-  const result = await mongoDBClient.db.collection('mangas').findOne({ _id: mongoDBClient.toObjectId(id) })
-  if (!result) {
-    return null
-  }
+  // Perform the search  in ES when cache miss occurs
+  const results = await customAxiosInstance.get(`teemii.mangas/_doc/${id}`)
+  const result = results.data._source
+
 
   // Cache the results
-  await setInCache(cacheKey, result)
+  setInCache(cacheKey, result)
   return result
 }
 
@@ -32,28 +62,38 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   }
 
   // compute start performance
-  //const start = process.hrtime.bigint();
+  const start = process.hrtime.bigint();
 
-  // Perform the search in MongoDB when cache miss occurs
-  const mongoQuery = {
-    $or: [
-      { canonicalTitle: { $regex: query, $options: 'i' } },
-      { altTitles: { $regex: query, $options: 'i' } },
+  // Perform the search in ES when cache miss occurs
+
+  //{"query":{"query_string":{"query":"one"}},"size":10,"from":0,"sort":[]}
+  const payload = {
+    query: {
+      query_string: {
+        query:  query
+      },
+    },
+    "sort": [
+      { "_score": "desc"},
+      { [sortBy]: order === 'ASC' ? "asc" : "desc" }
     ],
+    from: offset,
+    size: limit,
   }
-  const results = mongoDBClient.db.collection('mangas').find(mongoQuery).sort({ [sortBy]: order === 'ASC' ? 1 : -1 }).skip(offset).limit(limit)
-
-  const total = await mongoDBClient.db.collection('mangas').countDocuments(mongoQuery)
-
-  // compute end performance
-  //const end = process.hrtime.bigint();
-  //const time = Number(end - start) / 1000000;
-  //console.log(`MongoDB search took ${time} ms`);
+  //const results = await axios.post('https://api.pencilectric.org/plume/teemii.mangas/_search', payload)
+  const results = await customAxiosInstance.post('teemii.mangas/_search', payload)
+  const total = results.data.hits.total.value
+  // compute end performance (in milliseconds)
+  // 150 ms for mongoDB (query: one) 120 ms for mongoDB (query: girl)
+  // 281 ms for ES (query: one)  281 ms query girl
+  const end = process.hrtime.bigint();
+  const time = Number(end - start) / 1000000;
+  console.log(`MongoDB search took ${time} ms`);
 
   // Cache the results
-  const rows = await results.toArray()
-  await setInCache(cacheKey, rows)
+  const rows = await results.data.hits.hits.map((hit) => { return { id: hit._id, ...hit._source  }})
+  setInCache(cacheKey, rows)
   return { count: total, rows }
 }
 
-module.exports = { searchManga, getManga }
+module.exports = { searchManga, getManga, getMangaChapters }
