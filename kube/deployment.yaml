@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: teemii-api
   annotations:
-    argocd.argoproj.io/restart: "true"
-    restartTimestamp: "2024-01-28T10:10:00Z"
+    version: "0.0.5"
 spec:
   replicas: 1
   selector:

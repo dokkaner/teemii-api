@@ -4,6 +4,8 @@ metadata:
   creationTimestamp: null
   name: teemii-env
   namespace: default
+  annotations:
+    version: "0.0.5"
 spec:
   encryptedData:
     ADDRESS: AgCCwp/Bs2gO5fdi2p5YpTLajCvQD1X1YvPF/z1LitGARGUSkhRWVXsV/45sWLGLQ+OXzhHA58VCj7Y6mpx9t/nmSKesdePeIUKZuDEZK10LiegX57rM60/ER1PEOZuG2FfLds+QZT+RWRnLCh3ghD6Erw/OX6+VgUdNWAgulKbL94bcxnB+hfsa4bnxupoz9viubIMCGX5JKC1S8nOoVD2+sESuveVmvtcd9Gv0/1EeRwsZD9/X9YTv1wp1hxh91pHKbm2hTrRLXCVKmmY7rEqOTjdl7tXEVOXGiiOvwP0LTSX0Wr6Gplo5K6CE/S/J248xZUqRVaP3qd07lJRElT8il8OfKsBJ9YpdXvFHRC50zw4H6/xDfda5ZEuIiu2FfmRRJJxegEaowCsc4VIlR9kvD0W+ajSAm6G9fv+vKnF8F4Zm1MVHrxBQNHoJit0nkeAZk5uzFW63v1IcsHjpMYkDKc8+isMjnR9/eeCaovpsuYLfZfb+isKLBtx8GY0aIYYplLbNWxZW7KGsHxoPL1bUWBHo9Udtiw9sVByfRC7phxwTjGYLN7z3hVUjiAtsco+wXFBqcxEuvftUKr3w1+fwd7wykHx3gZIPLJ44zdSMT6AXuFBveNty2wo4u689LJy9ey+EgbTxNGN9xYjjJwQP60HC3gVSiESngxTjrrAZQiXNFClDre7YB4dgzDSoVRNdDVRsdt6W
