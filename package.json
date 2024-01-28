@@ -1,0 +1,31 @@
+{
+  "name": "teemii-api",
+  "version": "0.0.2",
+  "description": "Teemii API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "fastify",
+    "mongodb",
+    "redis",
+    "api",
+    "manga"
+  ],
+  "author": "Dokkaner",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/compress": "^6.5.0",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.1",
+    "fastify": "^4.25.2",
+    "redis": "^4.6.12"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3"
+  }
+}

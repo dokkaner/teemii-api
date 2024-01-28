@@ -1,0 +1,46 @@
+# Dépendances
+/node_modules
+
+# Fichiers de configuration
+.env
+/config/*.json
+
+# Fichiers et dossiers générés
+/dist
+/build
+/logs
+/*.log
+
+# Système d'exploitation et éditeurs
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Dossiers de cache
+.npm
+.nuxt
+
+# Autres fichiers
+*.tar.gz
+*.zip
+*.rar
+*.exe
+*.dll
+*.so
+*.dylib
+
+env.yaml
+
+# Fichiers de débogage
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+lastProcessedPage.txt
+
+/tests
+/.vscode
+/.idea
+/.idea/dataSources
+/Data

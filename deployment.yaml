@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teemii-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teemii-api
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: teemii-api
+    spec:
+      containers:
+        - image: ghcr.io/dokkaner/teemii-api:0.0.3
+          name: teemii-api
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: teemii-api
+          env:
+            - name: ES_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: ES_BASE_URL
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: REDIS_PORT
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: REDIS_PASSWORD
+            - name: ENABLE_REDIS
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: ENABLE_REDIS
+            - name: ENABLE_MEMCACHED
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: ENABLE_MEMCACHED
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: PORT
+            - name: ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: ADDRESS
+            - name: ES_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: teemii-env
+                  key: ES_API_KEY
