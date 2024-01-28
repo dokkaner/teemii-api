@@ -15,7 +15,7 @@ spec:
         app: teemii-api
     spec:
       containers:
-        - image: teamdokkaner/teemii-api:0.0.3
+        - image: teamdokkaner/teemii-api:latest
           name: teemii-api
           resources:
             requests:
