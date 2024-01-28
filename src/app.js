@@ -12,12 +12,6 @@ const mangaRoutes = require('./routes/mangas')
 // Start the server
 const start = async () => {
   try {
-/* */
-    await fastify.register(compress, {
-      global: true,
-      threshold: 1024,
-    })
-
     await fastify.register(mangaRoutes)
 
     // In-memory cache configuration
