@@ -1,4 +1,4 @@
-const fastify = require('fastify')({ logger: {level: 'warn'}})
+const fastify = require('fastify')({ logger: { level: 'warn' } })
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 // spec
@@ -14,18 +14,19 @@ const start = async () => {
     await fastify.register(mangaRoutes)
 
     // In-memory cache configuration
-    memoryCache.setup(1000, 60 * 1000)
+    memoryCache.setup(1000, 5 * 60 * 1000) // 1000 items, 5 minute
 
     // Redis configuration
-    const redisUrl = `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
-    console.warn('Connecting to Redis at ', process.env.REDIS_HOST)
-    await redisClient.connect({
-      legacyMode: false,
-      url: redisUrl,
-    })
+    if (process.env.ENABLE_REDIS !== '0') {
+      const redisUrl = `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
+      console.warn('Connecting to Redis at ', process.env.REDIS_HOST)
+      await redisClient.connect({
+        legacyMode: false,
+        url: redisUrl,
+      })
+    }
 
-
-    await fastify.listen( process.env.PORT || 3000, process.env.ADDRESS || '127.0.0.1')
+    await fastify.listen(process.env.PORT || 3000, process.env.ADDRESS || '127.0.0.1')
     fastify.log.info(`Server listening on ${fastify?.server?.address()?.port}`)
   } catch (err) {
     fastify.log.error(err)

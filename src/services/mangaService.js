@@ -1,5 +1,6 @@
 const { getFromCache, setInCache } = require('./cacheManager')
 const customAxiosInstance = require('./customAxiosInstance')
+const destr = require('destr')
 
 async function getMangaChapters (id) {
   const cacheKey = `manga:${id}:chapters`
@@ -7,7 +8,7 @@ async function getMangaChapters (id) {
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey)
   if (cachedResult) {
-    return JSON.parse(cachedResult)
+    return destr(cachedResult)
   }
 
   // Perform the search  in ES when cache miss occurs
@@ -27,7 +28,7 @@ async function getMangaChapters (id) {
   const total = results.data.hits.total.value
 
   // Cache the results
-  setInCache(cacheKey, rows)
+  setInCache(cacheKey, rows).catch(console.error);
   return { count: total, rows }
 }
 
@@ -37,7 +38,7 @@ async function getManga (id) {
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey)
   if (cachedResult) {
-    return JSON.parse(cachedResult)
+    return destr(cachedResult)
   }
 
   // Perform the search  in ES when cache miss occurs
@@ -45,7 +46,7 @@ async function getManga (id) {
   const result = results.data._source
 
   // Cache the results
-  setInCache(cacheKey, result)
+  setInCache(cacheKey, result).catch(console.error);
   return result
 }
 
@@ -55,7 +56,7 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey);
   if (cachedResult) {
-    const rows = JSON.parse(cachedResult);
+    const rows = destr(cachedResult);
     return { count: rows.length, rows };
   }
 
@@ -77,7 +78,6 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   for (let i = 0; i < hits.length; i++) {
     rows[i] = { id: hits[i]._id, ...hits[i]._source };
   }
-
 
   // compute end performance (in milliseconds)
   // const end = process.hrtime.bigint()
