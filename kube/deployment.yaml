@@ -5,7 +5,7 @@ metadata:
   annotations:
     version: "0.0.5"
 spec:
-  replicas: 4
+  replicas: 5
   selector:
     matchLabels:
       app: teemii-api
