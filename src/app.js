@@ -17,10 +17,13 @@ const start = async () => {
     memoryCache.setup(1000, 60 * 1000)
 
     // Redis configuration
+    const redisUrl = `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
+    console.warn('Connecting to Redis at', redisUrl)
     await redisClient.connect({
       legacyMode: false,
-      url: `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}/0`,
+      url: redisUrl,
     })
+
 
     await fastify.listen( process.env.PORT || 3000, process.env.ADDRESS || '127.0.0.1')
     fastify.log.info(`Server listening on ${fastify?.server?.address()?.port}`)
