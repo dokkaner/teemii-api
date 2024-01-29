@@ -50,44 +50,39 @@ async function getManga (id) {
 }
 
 async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityRank', order = 'ASC') {
-  const cacheKey = `search:${query}:${limit}:${offset}:${sortBy}:${order}`
+  const cacheKey = `search:${query}:${limit}:${offset}:${sortBy}:${order}`;
 
   // Try fetching from cache first
-  const cachedResult = await getFromCache(cacheKey)
+  const cachedResult = await getFromCache(cacheKey);
   if (cachedResult) {
-    const rows = JSON.parse(cachedResult)
-    return { count: rows.length, rows }
+    const rows = JSON.parse(cachedResult);
+    return { count: rows.length, rows };
   }
 
   // compute start performance
-  const start = process.hrtime.bigint()
+  // const start = process.hrtime.bigint()
 
   // Perform the search in ES when cache miss occurs
   const payload = {
-    query: {
-      query_string: {
-        query: query
-      },
-    },
-    'sort': [
-      { '_score': 'desc' },
-      { [sortBy]: order === 'ASC' ? 'asc' : 'desc' }
-    ],
+    query: { query_string: { query } },
+    sort: [{ '_score': 'desc' }, { [sortBy]: order.toLowerCase() === 'asc' ? 'asc' : 'desc' }],
     from: offset,
     size: limit,
-  }
-  const results = await customAxiosInstance.post('teemii.mangas/_search', payload)
-  const total = results.data.hits.total.value
+  };
+
+  const { data } = await customAxiosInstance.post('teemii.mangas/_search', payload);
+  const total = data.hits.total.value;
+
+  const rows = data.hits.hits.map(hit => ({ id: hit._id, ...hit._source }));
+
   // compute end performance (in milliseconds)
+  // const end = process.hrtime.bigint()
+  // const time = Number(end - start) / 1000000
+  // console.log(`ES search took ${time} ms`)
 
-  const end = process.hrtime.bigint()
-  const time = Number(end - start) / 1000000
-  console.log(`MongoDB search took ${time} ms`)
+  setInCache(cacheKey, JSON.stringify(rows)).catch(console.error);
 
-  // Cache the results
-  const rows = await results.data.hits.hits.map((hit) => { return { id: hit._id, ...hit._source }})
-  setInCache(cacheKey, rows)
-  return { count: total, rows }
+  return { count: total, rows };
 }
 
 module.exports = { searchManga, getManga, getMangaChapters }
