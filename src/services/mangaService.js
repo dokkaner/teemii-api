@@ -84,7 +84,7 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   // const time = Number(end - start) / 1000000
   // console.log(`ES search took ${time} ms`)
 
-  setInCache(cacheKey, JSON.stringify(rows)).catch(console.error);
+  setInCache(cacheKey, rows).catch(console.error);
 
   return { count: total, rows };
 }

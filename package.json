@@ -1,6 +1,6 @@
 {
   "name": "teemii-api",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Teemii API",
   "main": "src/app.js",
   "scripts": {
