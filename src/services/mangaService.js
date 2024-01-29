@@ -72,8 +72,12 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
 
   const { data } = await customAxiosInstance.post('teemii.mangas/_search', payload);
   const total = data.hits.total.value;
+  const hits = data.hits.hits;
+  const rows = new Array(hits.length);
+  for (let i = 0; i < hits.length; i++) {
+    rows[i] = { id: hits[i]._id, ...hits[i]._source };
+  }
 
-  const rows = data.hits.hits.map(hit => ({ id: hit._id, ...hit._source }));
 
   // compute end performance (in milliseconds)
   // const end = process.hrtime.bigint()
