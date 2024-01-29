@@ -17,7 +17,7 @@ const start = async () => {
     memoryCache.setup(1000, 60 * 1000)
 
     // Redis configuration
-    const redisUrl = `redis://${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
+    const redisUrl = `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}`
     console.warn('Connecting to Redis at ', process.env.REDIS_HOST)
     await redisClient.connect({
       legacyMode: false,
