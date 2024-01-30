@@ -9,7 +9,7 @@ async function getManga (id) {
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey)
   if (cachedResult) {
-    return JSON.stringify(cachedResult)
+    return JSON.parse(cachedResult)
   }
 
   // Perform the search  in ES when cache miss occurs
@@ -28,7 +28,7 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey);
   if (cachedResult) {
-    const rows = JSON.stringify(cachedResult);
+    const rows = JSON.parse(cachedResult);
     return { count: rows.length, rows };
   }
 
@@ -58,7 +58,8 @@ async function getMangaChapters (id, limit, offset) {
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey)
   if (cachedResult) {
-    return JSON.stringify(cachedResult)
+    const rows = JSON.parse(cachedResult);
+    return { count: rows.length, rows };
   }
 
   // Perform the search  in ES when cache miss occurs
@@ -80,8 +81,6 @@ async function getMangaChapters (id, limit, offset) {
     rows[i] = { id: hits[i]._id, ...hits[i]._source };
   }
   const total = results.data.hits.total.value
-
-  setInCache(cacheKey, rows).catch(console.error);
 
   // Cache the results
   setInCache(cacheKey, rows).catch(console.error);
