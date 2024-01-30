@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: teemii-api
   annotations:
-    version: "0.0.7"
+    version: "0.0.15"
 spec:
   replicas: 6
   selector:

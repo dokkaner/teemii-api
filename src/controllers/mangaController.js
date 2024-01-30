@@ -14,19 +14,6 @@ function handleError(err, reply) {
   }
   reply.status(500).send({ message: "Error in fetching data" });
 }
-async function getMangaChapters(fastify, request, reply) {
-  try {
-    const id = request.params.id;
-    const result = await mangaService.getMangaChapters(id);
-    if (!result) {
-      return reply.status(404).send({ message: "Manga not found" });
-    }
-    reply.send(result);
-  } catch (err) {
-    request.log.error(err);
-    handleError(err, reply);
-  }
-}
 
 async function getManga(fastify, request, reply) {
   try {
@@ -58,6 +45,9 @@ async function searchManga(fastify, request, reply) {
 
     const { limit, offset } = getPagination(page, size)
     const results = await mangaService.searchManga(query, limit, offset, sortBy, order);
+    if (!results) {
+      return reply.status(404).send({ message: "Manga not found" });
+    }
     const response = getPagingData(results, page, limit)
     reply.send(response);
   } catch (err) {
@@ -66,4 +56,28 @@ async function searchManga(fastify, request, reply) {
   }
 }
 
+async function getMangaChapters(fastify, request, reply) {
+  try {
+    const id = request.params.id;
+
+    if (!id) {
+      return reply.status(400).send({ message: "Manga ID is required" });
+    }
+
+    // set default values
+    const page = request.query.page || 0;
+    const size = request.query.size || 100;
+
+    const { limit, offset } = getPagination(page, size)
+    const results = await mangaService.getMangaChapters(id, limit, offset);
+    if (!results) {
+      return reply.status(404).send({ message: "Chapters not found" });
+    }
+    const response = getPagingData(results, page, limit)
+    reply.send(response);
+  } catch (err) {
+    request.log.error(err);
+    handleError(err, reply);
+  }
+}
 module.exports = { searchManga, getManga, getMangaChapters };

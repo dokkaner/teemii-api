@@ -1,36 +1,7 @@
 const { getFromCache, setInCache } = require('./cacheManager')
 const customAxiosInstance = require('./customAxiosInstance')
-const destr = require('destr')
 
-async function getMangaChapters (id) {
-  const cacheKey = `manga:${id}:chapters`
 
-  // Try fetching from cache first
-  const cachedResult = await getFromCache(cacheKey)
-  if (cachedResult) {
-    return destr(cachedResult)
-  }
-
-  // Perform the search  in ES when cache miss occurs
-  const payload = {
-    from: 0,
-    size: 10000,
-    query: {
-      simple_query_string: {
-        query: id,
-        fields: ['mangaId'],
-      }
-    },
-    sort: [{ 'chapterNum.keyword': { order: 'asc' } }]
-  }
-  const results = await customAxiosInstance.post(`teemii.chapters/_search`, payload)
-  const rows = await results.data.hits.hits.map((hit) => hit._source)
-  const total = results.data.hits.total.value
-
-  // Cache the results
-  setInCache(cacheKey, rows).catch(console.error);
-  return { count: total, rows }
-}
 
 async function getManga (id) {
   const cacheKey = `manga:${id}`
@@ -38,12 +9,13 @@ async function getManga (id) {
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey)
   if (cachedResult) {
-    return destr(cachedResult)
+    return JSON.stringify(cachedResult)
   }
 
   // Perform the search  in ES when cache miss occurs
   const results = await customAxiosInstance.get(`teemii.mangas/_doc/${id}`)
   const result = results.data._source
+  result.id = results.data._id
 
   // Cache the results
   setInCache(cacheKey, result).catch(console.error);
@@ -56,14 +28,10 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
   // Try fetching from cache first
   const cachedResult = await getFromCache(cacheKey);
   if (cachedResult) {
-    const rows = destr(cachedResult);
+    const rows = JSON.stringify(cachedResult);
     return { count: rows.length, rows };
   }
 
-  // compute start performance
-  // const start = process.hrtime.bigint()
-
-  // Perform the search in ES when cache miss occurs
   const payload = {
     query: { query_string: { query } },
     sort: [{ '_score': 'desc' }, { [sortBy]: order.toLowerCase() === 'asc' ? 'asc' : 'desc' }],
@@ -79,14 +47,45 @@ async function searchManga (query, limit = 25, offset = 0, sortBy = 'popularityR
     rows[i] = { id: hits[i]._id, ...hits[i]._source };
   }
 
-  // compute end performance (in milliseconds)
-  // const end = process.hrtime.bigint()
-  // const time = Number(end - start) / 1000000
-  // console.log(`ES search took ${time} ms`)
-
   setInCache(cacheKey, rows).catch(console.error);
 
   return { count: total, rows };
+}
+
+async function getMangaChapters (id, limit, offset) {
+  const cacheKey = `manga:${id}:chapters`
+
+  // Try fetching from cache first
+  const cachedResult = await getFromCache(cacheKey)
+  if (cachedResult) {
+    return JSON.stringify(cachedResult)
+  }
+
+  // Perform the search  in ES when cache miss occurs
+  const payload = {
+    query: {
+      simple_query_string: {
+        query: id,
+        fields: ['mangaId'],
+      }
+    },
+    sort: [{ 'chapterNum.keyword': { order: 'asc' } }],
+    from: offset,
+    size: limit
+  }
+  const results = await customAxiosInstance.post(`teemii.chapters/_search`, payload)
+  const hits = results.data.hits.hits;
+  const rows = new Array(hits.length);
+  for (let i = 0; i < hits.length; i++) {
+    rows[i] = { id: hits[i]._id, ...hits[i]._source };
+  }
+  const total = results.data.hits.total.value
+
+  setInCache(cacheKey, rows).catch(console.error);
+
+  // Cache the results
+  setInCache(cacheKey, rows).catch(console.error);
+  return { count: total, rows }
 }
 
 module.exports = { searchManga, getManga, getMangaChapters }
